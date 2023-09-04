@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Box,
   Drawer,
@@ -18,10 +18,36 @@ import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useAuth0 } from "@auth0/auth0-react";
 
 const Navbar = () => {
   const navigate = useNavigate();
+  const { logout, loginWithRedirect } = useAuth0();
+
+  const renderMenuItem = ({ icon: Icon, label, path, action }, i) => (
+    <MenuItem
+      key={i}
+      sx={{
+        display: "flex",
+        gap: "20px",
+      }}
+      onClick={() => {
+        if (action) {
+          action();
+        } else {
+          navigate(path);
+        }
+      }}
+    >
+      <Icon />
+      <Typography>{label}</Typography>
+    </MenuItem>
+  );
+
+  const handleLogout = () => {
+    logout({ returnTo: window.location.origin });
+  };
 
   const menuItems = [
     { icon: DashboardIcon, label: "Dashboard", path: "/" },
@@ -29,24 +55,14 @@ const Navbar = () => {
     { icon: InsertDriveFileIcon, label: "Tickets", path: "/tickets" },
     { icon: CalendarMonthIcon, label: "Calendar", path: "/calendar" },
     { icon: PeopleAltIcon, label: "Manage User Roles", path: "/userroles" },
-    { icon: NotificationsIcon, label: "Notifications", path: "/notifications" },
+    {
+      icon: NotificationsIcon,
+      label: "Notifications",
+      path: "/notifications",
+    },
     { icon: AccountCircleIcon, label: "My Profile", path: "/profile" },
-    { icon: LogoutIcon, label: "Sign Out", path: "/signout" },
+    { icon: LogoutIcon, label: "logout", action: handleLogout },
   ];
-
-  const renderMenuItem = ({ icon: Icon, label, path }, i) => (
-    <MenuItem
-      key={i}
-      sx={{
-        display: "flex",
-        gap: "20px",
-      }}
-      onClick={() => navigate(path)}
-    >
-      <Icon />
-      <Typography>{label}</Typography>
-    </MenuItem>
-  );
 
   return (
     <Drawer variant="permanent" anchor="left" sx={{ width: "300px" }}>
