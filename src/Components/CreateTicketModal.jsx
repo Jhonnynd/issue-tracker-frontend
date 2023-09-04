@@ -11,7 +11,16 @@ import {
   Select,
   TextField,
 } from "@mui/material";
+import {
+  ref as storageRef,
+  uploadBytes,
+  getDownloadURL,
+} from "firebase/storage";
+import { storage } from "../firebase";
 import { getAllProjects } from "../utils/ProjectFunctions";
+import axios from "axios";
+import Swal from "sweetalert2";
+import ImagePlaceHolder from "../img/image-placeholder.png";
 
 const style = {
   position: "absolute",
@@ -24,25 +33,77 @@ const style = {
   boxShadow: 24,
   p: 4,
 };
+const STORAGE_KEY = "images/";
 
 export default function CreateTicketModal({ onClose, isOpen }) {
   const [projects, setProjects] = useState([]);
-  const [selectedProject, setSelectedProject] = useState([]);
-  useEffect(() => {
-    const fetchProjects = async () => {
-      try {
-        const projectData = await getAllProjects();
-        setProjects(projectData);
-      } catch (error) {
-        console.error("Error fetching projects:", error);
-      }
-    };
+  const [selectedProject, setSelectedProject] = useState(null);
 
+  const [users, setUsers] = useState([]);
+
+  const [priorities, setPriorities] = useState([]);
+  const [types, setTypes] = useState([]);
+  const [statuses, setStatuses] = useState([]);
+
+  const [selectedPriority, setSelectedPriority] = useState([]);
+  const [selectedType, setSelectedType] = useState([]);
+  const [selectedStatus, setSelectedStatus] = useState([]);
+
+  const [file, setFile] = useState(null);
+  const [fileName, setFileName] = useState(null);
+  const [imagePreview, setImagePreview] = useState(ImagePlaceHolder);
+
+  useEffect(() => {
     fetchProjects();
+    getAllTicketTypes();
+
+    console.log("priorities and types", priorities, types);
   }, []);
 
+  const getAllTicketTypes = async () => {
+    const response = await axios.get(
+      `${process.env.REACT_APP_BACKEND_URL}/tickets/types`
+    );
+    console.log(response.data);
+    setStatuses(response.data.ticket_statuses);
+    setTypes(response.data.ticket_types);
+    setPriorities(response.data.ticket_priorities);
+  };
+
+  const fetchProjects = async () => {
+    try {
+      const projectData = await getAllProjects();
+      setProjects(projectData);
+    } catch (error) {
+      console.error("Error fetching projects:", error);
+    }
+  };
   const handleClose = () => {
     onClose();
+  };
+  const getAllUsersFromAProject = async (id) => {
+    try {
+      const response = await axios.get(
+        `${process.env.REACT_APP_BACKEND_URL}/users/projects/${id}`
+      );
+      const allUserInfo = response.data.map((project) => project.user);
+
+      if (allUserInfo.length > 0) {
+        setUsers(allUserInfo);
+      }
+      console.log("users", allUserInfo);
+    } catch (error) {}
+  };
+
+  const handleUploadPicture = (e) => {
+    const file = e.target.files[0];
+    setFile(file);
+    setFileName(e.target.value);
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setImagePreview(reader.result);
+    };
+    reader.readAsDataURL(file);
   };
 
   return (
@@ -77,36 +138,30 @@ export default function CreateTicketModal({ onClose, isOpen }) {
               gap: "30px",
               flexDirection: {
                 xs: "column",
-                md: "row",
               },
             }}
           >
             <TextField
               id="title"
               label="title"
-              InputProps={{
-                style: { backgroundColor: "white" },
-              }}
-            />
-            <TextField
-              required
-              id="description"
-              label="description"
-              InputProps={{
+              inputProps={{
                 style: { backgroundColor: "white" },
               }}
             />
             <Box sx={{ minWidth: 120 }}>
               <FormControl fullWidth sx={{ bgcolor: "white" }}>
                 <InputLabel required id="demo-simple-select-label">
-                  project
+                  Project
                 </InputLabel>
                 <Select
                   labelId="project"
                   id="project"
                   label="project"
-                  onChange={(e) => this.handleChange(e, "type")}
-                  InputProps={{
+                  onChange={(e) => {
+                    setSelectedProject(e.target.value);
+                    getAllUsersFromAProject(e.target.value);
+                  }}
+                  inputProps={{
                     style: { backgroundColor: "white" },
                   }}
                 >
@@ -123,24 +178,75 @@ export default function CreateTicketModal({ onClose, isOpen }) {
             <Box sx={{ minWidth: 120 }}>
               <FormControl fullWidth sx={{ bgcolor: "white" }}>
                 <InputLabel required id="demo-simple-select-label">
-                  Assign ticket to
+                  Type
                 </InputLabel>
                 <Select
-                  labelId="project"
-                  id="project"
-                  label="project"
-                  onChange={(e) => setSelectedProject(e.target.value)}
-                  InputProps={{
+                  labelId="Type"
+                  id="Type"
+                  label="Type"
+                  onChange={(e) => setSelectedType(e.target.value)}
+                  inputProps={{
                     style: { backgroundColor: "white" },
                   }}
                 >
-                  {projects.map((project, i) => {
+                  {types.map((type, i) => {
                     return (
-                      <MenuItem key={i} value={project.id}>
-                        {project.title}
+                      <MenuItem key={i} value={type.id}>
+                        {type.description}
                       </MenuItem>
                     );
                   })}
+                </Select>
+              </FormControl>
+            </Box>
+            <Box sx={{ minWidth: 120 }}>
+              <FormControl fullWidth sx={{ bgcolor: "white" }}>
+                <InputLabel required id="demo-simple-select-label">
+                  Priority
+                </InputLabel>
+                <Select
+                  labelId="Priority"
+                  id="Priority"
+                  label="Priority"
+                  onChange={(e) => setSelectedPriority(e.target.value)}
+                  inputProps={{
+                    style: { backgroundColor: "white" },
+                  }}
+                >
+                  {priorities.map((priority, i) => {
+                    return (
+                      <MenuItem key={i} value={priority.id}>
+                        {priority.description}
+                      </MenuItem>
+                    );
+                  })}
+                </Select>
+              </FormControl>
+            </Box>
+            <Box sx={{ minWidth: 120 }}>
+              <FormControl fullWidth sx={{ bgcolor: "white" }}>
+                <InputLabel required id="demo-simple-select-label">
+                  {users.length > 0
+                    ? `Assign ticket to`
+                    : `No users found for this project`}
+                </InputLabel>
+                <Select
+                  disabled={!selectedProject || users.length === 0}
+                  labelId="project"
+                  id="project"
+                  label="project"
+                  inputProps={{
+                    style: { backgroundColor: "white" },
+                  }}
+                >
+                  {users &&
+                    users.map((user, i) => {
+                      return (
+                        <MenuItem key={i} value={user.id}>
+                          {`${user.first_name} ${user.last_name} (${user.user_role.description})`}
+                        </MenuItem>
+                      );
+                    })}
                 </Select>
               </FormControl>
             </Box>
@@ -154,14 +260,38 @@ export default function CreateTicketModal({ onClose, isOpen }) {
             }}
           >
             <TextField
-              id="Comments"
-              label="Comments"
+              id="description"
+              label="description"
+              sx={{ backgroundColor: "#fff" }}
               multiline
               rows={4}
-              InputProps={{
-                style: { backgroundColor: "white" },
+              inputProps={{
+                style: { backgroundColor: "#fff" },
               }}
             />
+            <Box>
+              <label>
+                <Button
+                  variant="contained"
+                  component="span"
+                  sx={{ width: 280 }}
+                >
+                  Upload image
+                </Button>
+                <input
+                  hidden
+                  accept="image/*"
+                  type="file"
+                  onChange={(e) => handleUploadPicture(e)}
+                />
+              </label>
+              <Box sx={{ width: "20px" }}>
+                <img
+                  sx={{ width: "100%", height: "100%", objectFit: "cover" }}
+                  src={imagePreview}
+                />
+              </Box>
+            </Box>
             <Button variant="contained" color="primary">
               Submit
             </Button>

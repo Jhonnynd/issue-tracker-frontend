@@ -10,7 +10,7 @@ import Checkbox from "@mui/material/Checkbox";
 import Avatar from "@mui/material/Avatar";
 import axios from "axios";
 import Swal from "sweetalert2";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   ref as storageRef,
   uploadBytes,
@@ -18,12 +18,17 @@ import {
 } from "firebase/storage";
 import { storage } from "../firebase";
 import ImagePlaceHolder from "../img/image-placeholder.png";
+
 const STORAGE_KEY = "images/";
-const ProjectForm = () => {
+
+const UpdateProject = () => {
+  const { projectId } = useParams();
+
   const [projectTitle, setProjectTitle] = useState("");
   const [projectDescription, setProjectDescription] = useState("");
   const [checked, setChecked] = useState([]);
   const [usersData, setUsersData] = useState([]);
+  const [projectUsers, setProjectUsers] = useState([]);
 
   const [file, setFile] = useState(null);
   const [fileName, setFileName] = useState(null);
@@ -32,7 +37,9 @@ const ProjectForm = () => {
 
   const navigate = useNavigate();
   useEffect(() => {
+    getProjectInfo();
     getAllUsers();
+    getAllUsersFromAProject();
     console.log("users data", usersData);
   }, []);
 
@@ -51,6 +58,33 @@ const ProjectForm = () => {
       }));
 
       setUsersData(allUsersWithRoles);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const getAllUsersFromAProject = async () => {
+    try {
+      const response = await axios.get(
+        `${process.env.REACT_APP_BACKEND_URL}/users/projects/${projectId}`
+      );
+      setProjectUsers(response.data.map((item) => item.user));
+      const initialCheckedUsers = response.data.map((item) => item.user.id);
+      setChecked(initialCheckedUsers);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const getProjectInfo = async () => {
+    try {
+      const response = await axios.get(
+        `${process.env.REACT_APP_BACKEND_URL}/projects/project/${projectId}`
+      );
+      setProjectTitle(response.data.title);
+      setProjectDescription(response.data.description);
+      setImagePreview(response.data.projects_attachments[0].url);
+      console.log("project", response.data);
     } catch (error) {
       console.error(error);
     }
@@ -80,25 +114,24 @@ const ProjectForm = () => {
     setChecked(newChecked);
   };
 
-  const createNewProject = async (e) => {
+  const updateProject = async (e) => {
     e.preventDefault();
     let url;
 
-    // Declare storage reference and upload file
-    const fullStorageRef = storageRef(storage, STORAGE_KEY + fileName);
-    await uploadBytes(fullStorageRef, file);
-
-    // Get download URL
-    try {
-      url = await getDownloadURL(fullStorageRef);
-      console.log(url);
-      setImageUrl(url);
-    } catch (error) {
-      console.log(error);
-      // Handle the error appropriately
+    if (file) {
+      const fullStorageRef = storageRef(storage, STORAGE_KEY + fileName);
+      await uploadBytes(fullStorageRef, file);
+      try {
+        url = await getDownloadURL(fullStorageRef);
+        setImageUrl(url);
+      } catch (error) {
+        console.log(error);
+      }
+    } else {
+      url = imageUrl;
     }
 
-    if (!url || projectTitle === "" || projectDescription === "") {
+    if (projectTitle === "" || projectDescription === "") {
       Swal.fire({
         icon: "warning",
         title: "Oops...",
@@ -115,21 +148,16 @@ const ProjectForm = () => {
         userIds: checked,
         url: url,
       };
-
-      const response = await axios.post(
-        `${process.env.REACT_APP_BACKEND_URL}/projects`,
+      console.log(dataToSend);
+      const response = await axios.put(
+        `${process.env.REACT_APP_BACKEND_URL}/projects/${projectId}`,
         { ...dataToSend }
       );
-      console.log("created project!", response);
-
-      setChecked([]);
-      setProjectDescription("");
-      setProjectTitle("");
-      setImageUrl("");
+      console.log("Updated project!", response);
 
       Swal.fire({
         icon: "success",
-        title: "Your work has been saved",
+        title: "Your work has been updated",
         showConfirmButton: true,
         timer: 4000,
       }).then((result) => {
@@ -179,7 +207,7 @@ const ProjectForm = () => {
           <TextField
             sx={{ width: "400px" }}
             id="outlined-multiline-static"
-            label="Multiline"
+            label="Description"
             multiline
             rows={4}
             onChange={(e) => setProjectDescription(e.target.value)}
@@ -224,7 +252,7 @@ const ProjectForm = () => {
                         </ListItemAvatar>
                         <ListItemText
                           id={labelId}
-                          primary={`${user.firstName} ${user.lastName}  (${user.role})`}
+                          primary={`${user.firstName} ${user.lastName} (${user.role})`}
                         />
                       </ListItemButton>
                     </ListItem>
@@ -240,7 +268,7 @@ const ProjectForm = () => {
                 component="span"
                 sx={{ width: "100%" }}
               >
-                Upload image
+                Upload new image
               </Button>
               <input
                 hidden
@@ -257,8 +285,8 @@ const ProjectForm = () => {
               />
             </Box>
           </Box>
-          <Button variant="contained" onClick={(e) => createNewProject(e)}>
-            Create Project
+          <Button variant="contained" onClick={(e) => updateProject(e)}>
+            Update Project
           </Button>
         </Box>
       </Box>
@@ -266,4 +294,4 @@ const ProjectForm = () => {
   );
 };
 
-export default ProjectForm;
+export default UpdateProject;

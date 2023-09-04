@@ -16,11 +16,12 @@ import FolderIcon from "@mui/icons-material/Folder";
 import axios from "axios";
 import { Box, Button, Chip } from "@mui/material";
 import CreateTicketModal from "../Components/CreateTicketModal";
+import { useNavigate } from "react-router-dom";
 
 const Tickets = () => {
-  const [openSections, setOpenSections] = useState([]);
+  const navigate = useNavigate();
 
-  const [isCreateModalOpen, setCreateModalOpen] = useState(false);
+  const [openSections, setOpenSections] = useState([]);
 
   const [tickets, setTickets] = useState([]);
 
@@ -46,6 +47,7 @@ const Tickets = () => {
         console.log(response.data);
         setTickets(response.data);
         setOpenSections(new Array(response.data.length).fill(false));
+        console.log(openSections);
       })
       .catch(function (error) {
         console.error(error);
@@ -60,7 +62,6 @@ const Tickets = () => {
           display: "flex",
           flexDirection: "column",
           gap: "20px",
-          maxWidth: 800,
           bgcolor: "background.paper",
         }}
         component="nav"
@@ -72,46 +73,89 @@ const Tickets = () => {
               <ListItemIcon>
                 <FolderIcon />
               </ListItemIcon>
-              <ListItemText primary={ticket.project.title} />
+              <ListItemText primary={ticket.title} />
               {openSections[i] ? <ExpandLess /> : <ExpandMore />}
             </ListItemButton>
             <Collapse in={openSections[i]} timeout="auto" unmountOnExit>
-              <List component="div" sx={{}} disablePadding>
-                <ListItemButton
-                  sx={{ pl: 4, display: "flex", alignItems: "center", gap: 3 }}
-                >
-                  <ListItemIcon>
-                    <InsertDriveFileIcon />
-                  </ListItemIcon>
-                  <ListItemText primary={ticket.title} />
-                  <Chip
-                    label={ticket.ticket_status.description}
-                    color="primary"
-                  />
-                  <Chip
-                    label={ticket.ticket_priority.description}
-                    color="primary"
-                  />
-                  <Chip
-                    label={ticket.ticket_type.description}
-                    color="primary"
-                  />
-                </ListItemButton>
+              <List component="div" disablePadding>
+                {ticket.tickets.map((nestedTicket, j) => (
+                  <ListItemButton
+                    key={j}
+                    onClick={() => navigate(`/ticket/${nestedTicket.id}`)}
+                    sx={{
+                      pl: 4,
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "10px",
+                    }}
+                  >
+                    <ListItemIcon>
+                      <InsertDriveFileIcon />
+                    </ListItemIcon>
+                    <ListItemText
+                      sx={{ width: "65%", maxWidth: "65%" }}
+                      primary={nestedTicket.title}
+                    />
+                    <Box
+                      sx={{
+                        display: "flex",
+                        justifyContent: "center",
+                        gap: "10px",
+                        alignItems: "flex-start",
+                        width: "30%",
+                      }}
+                    >
+                      <Chip
+                        sx={{ width: "33%" }}
+                        label={nestedTicket.ticket_status.description}
+                        color={
+                          nestedTicket.ticket_status.description === "New"
+                            ? `warning`
+                            : nestedTicket.ticket_status.description ===
+                              "In Progress"
+                            ? `primary`
+                            : nestedTicket.ticket_status.description ===
+                              "Additional Info Required"
+                            ? `info`
+                            : "success"
+                        }
+                      />
+                      <Chip
+                        sx={{ width: "33%" }}
+                        label={nestedTicket.ticket_priority.description}
+                        color={
+                          nestedTicket.ticket_priority.description === "Low"
+                            ? `primary`
+                            : nestedTicket.ticket_priority.description ===
+                              "Medium"
+                            ? `warning`
+                            : "error"
+                        }
+                      />
+                      <Chip
+                        sx={{ width: "33%" }}
+                        label={nestedTicket.ticket_type.description}
+                        color={
+                          nestedTicket.ticket_type.description === "Bugs/Errors"
+                            ? `warning`
+                            : nestedTicket.ticket_type.description ===
+                              "Feature Request"
+                            ? `primary`
+                            : "info"
+                        }
+                      />
+                    </Box>
+                  </ListItemButton>
+                ))}
               </List>
             </Collapse>
             <hr />
           </Box>
         ))}
       </List>
-      <Button variant="contained" onClick={() => setCreateModalOpen(true)}>
+      <Button variant="contained" onClick={() => navigate("/createticket")}>
         Create a ticket
       </Button>
-      {isCreateModalOpen && (
-        <CreateTicketModal
-          onClose={() => setCreateModalOpen(false)}
-          isOpen={isCreateModalOpen}
-        />
-      )}
     </div>
   );
 };

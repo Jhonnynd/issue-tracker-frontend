@@ -112,7 +112,7 @@ const ProjectsList = () => {
           <TableBody>
             {projects.map((project, i) => (
               <StyledTableRow
-                // onClick={() => navigate("/")}
+                onClick={() => navigate(`/project/${project.id}`)}
                 key={project.title + i}
               >
                 <StyledTableCell component="th" scope="row">
