@@ -8,17 +8,11 @@ import { ThemeProvider } from "@emotion/react";
 import { theme } from "./theme";
 
 const AppWithAuth = () => {
-  const { isLoading, getAccessTokenSilently } = useAuth0();
+  const { isLoading } = useAuth0();
 
   if (isLoading) {
     return <div>Loading...</div>;
   }
-
-  // After authentication, get the token and store it in local storage
-  getAccessTokenSilently().then((token) => {
-    localStorage.setItem("Token", token);
-  });
-
   return (
     <BrowserRouter>
       <ThemeProvider theme={theme}>

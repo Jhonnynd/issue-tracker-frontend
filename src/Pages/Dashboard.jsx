@@ -8,40 +8,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 import axios from "axios";
 
 const Dashboard = () => {
-  const [accessToken, setAccessToken] = useState("");
   const navigate = useNavigate();
-
-  const { getAccessTokenSilently, isAuthenticated, user } = useAuth0();
-
-  useEffect(() => {
-    console.log(process.env.REACT_APP_SCOPE);
-    const checkLogin = async () => {
-      const accessToken = await getAccessTokenSilently({
-        authorizationParams: {
-          audience: process.env.REACT_APP_AUDIENCE,
-          scope: process.env.REACT_APP_SCOPE,
-        },
-      });
-      setAccessToken(accessToken);
-      // }
-      console.log("Access Token : ", accessToken);
-      console.log("User: ", user);
-      if (
-        isAuthenticated &&
-        accessToken !== null &&
-        typeof user.email !== "undefined"
-      ) {
-        // post to db
-        const userInfo = await axios.post(
-          `${process.env.REACT_APP_BACKEND_URL}/users/login`,
-          user
-        );
-        console.log(userInfo.data.checkedUser);
-      }
-    };
-    checkLogin();
-  }, [user, isAuthenticated]);
-
   return (
     <Box>
       <Box>

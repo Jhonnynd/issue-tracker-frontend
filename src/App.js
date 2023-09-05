@@ -11,22 +11,43 @@ import CreateTicket from "./Pages/CreateTicket";
 import UpdateProject from "./Pages/UpdateProject";
 import Ticket from "./Pages/Ticket";
 import Project from "./Pages/Project";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import Auth0 from "./Pages/Auth0";
-
-const AppWithAuth = () => {
-  const { isLoading, getAccessTokenSilently } = useAuth0();
-};
+import axios from "axios";
 
 function App() {
-  const {
-    logout,
-    isAuthenticated,
-    getAccessTokenSilently,
-    loginWithRedirect,
-    user,
-  } = useAuth0();
+  const { isAuthenticated, getAccessTokenSilently, loginWithRedirect, user } =
+    useAuth0();
+
+  const [currentUser, setCurrentUser] = useState(null);
+
+  useEffect(() => {
+    const checkLogin = async () => {
+      const accessToken = await getAccessTokenSilently({
+        authorizationParams: {
+          audience: process.env.REACT_APP_AUDIENCE,
+          scope: process.env.REACT_APP_SCOPE,
+        },
+      });
+      console.log("Access Token : ", accessToken);
+      console.log("User: ", user);
+      if (
+        isAuthenticated &&
+        accessToken !== null &&
+        typeof user.email !== "undefined"
+      ) {
+        // post to db
+        const userInfo = await axios.post(
+          `${process.env.REACT_APP_BACKEND_URL}/users/login`,
+          user
+        );
+        console.log(userInfo.data.checkedUser);
+        setCurrentUser(userInfo.data.checkedUser);
+      }
+    };
+    checkLogin();
+  }, [user, isAuthenticated]);
 
   const location = useLocation();
 
@@ -60,9 +81,7 @@ function App() {
           </div>
         </div>
       ) : (
-        <Routes>
-          <Route path="/" element={<Auth0 />} />
-        </Routes>
+        loginWithRedirect()
       )}
     </>
   );
