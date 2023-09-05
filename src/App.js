@@ -11,6 +11,7 @@ import CreateTicket from "./Pages/CreateTicket";
 import UpdateProject from "./Pages/UpdateProject";
 import Ticket from "./Pages/Ticket";
 import Project from "./Pages/Project";
+import CalendarPage from "./Pages/CalendarPage";
 import { useEffect, useState, createContext } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import Auth0 from "./Pages/Auth0";
@@ -80,7 +81,8 @@ function App() {
                 <Route path="/createticket" element={<CreateTicket />} />
                 <Route path="/projectform" element={<ProjectForm />} />
                 <Route path="/userroles" element={<ManageUserRoles />} />
-              </Routes>
+                <Route path="/calendar" element={<CalendarPage />} />
+        </Routes>
             </div>
           </div>
         </UserContext.Provider>

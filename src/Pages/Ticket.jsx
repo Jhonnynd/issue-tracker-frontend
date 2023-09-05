@@ -18,10 +18,18 @@ import {
   autocompleteClasses,
 } from "@mui/material";
 import axios from "axios";
-import { List } from "echarts";
+import {
+  ref as storageRef,
+  uploadBytes,
+  getDownloadURL,
+} from "firebase/storage";
+import { storage } from "../firebase";
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Swal from "sweetalert2";
+import ImagePlaceHolder from "../img/image-placeholder.png";
+
+const STORAGE_KEY = "images/";
 
 const style = {
   position: "absolute",
@@ -55,8 +63,15 @@ const Ticket = () => {
 
   const [openStatusModal, setOpenStatusModal] = useState(false);
   const [openEditTicketModal, setOpenEditTicketModal] = useState(false);
+  const [openReviewModal, setOpenReviewModal] = useState(false);
 
   const [comment, setComment] = useState("");
+  const [review, setReview] = useState("");
+
+  const [file, setFile] = useState(null);
+  const [fileName, setFileName] = useState(null);
+  const [imagePreview, setImagePreview] = useState(ImagePlaceHolder);
+  const [imageUrl, setImageUrl] = useState(null);
 
   const navigate = useNavigate();
 
@@ -66,12 +81,13 @@ const Ticket = () => {
   const handleOpenEditTicketModal = () => setOpenEditTicketModal(true);
   const handleCloseEditTicketModal = () => setOpenEditTicketModal(false);
 
+  const handleOpenReviewModal = () => setOpenReviewModal(true);
+  const handleCloseReviewModal = () => setOpenReviewModal(false);
+
   useEffect(() => {
     getTicketInfo();
     getTicketTypes();
     getAllComments();
-
-    console.log("ticket", ticket);
   }, []);
 
   const getTicketInfo = async () => {
@@ -112,7 +128,6 @@ const Ticket = () => {
         `${process.env.REACT_APP_BACKEND_URL}/tickets/${ticketId}/status`,
         { ticketStatusId: selectedStatus }
       );
-      console.log(selectedStatus);
       handleCloseStatusModal();
       Swal.fire({
         icon: "success",
@@ -129,7 +144,6 @@ const Ticket = () => {
 
   const updateTicket = async () => {
     try {
-      console.log(`${process.env.REACT_APP_BACKEND_URL}tickets/${ticketId}`);
       const response = await axios.put(
         `${process.env.REACT_APP_BACKEND_URL}/tickets/${ticketId}`,
         {
@@ -155,7 +169,6 @@ const Ticket = () => {
 
   const submitComment = async () => {
     try {
-      console.log("hi");
       const response = await axios.post(
         `${process.env.REACT_APP_BACKEND_URL}/tickets/${ticketId}/comments`,
         {
@@ -164,7 +177,6 @@ const Ticket = () => {
           description: comment,
         }
       );
-      console.log(selectedStatus);
       handleCloseStatusModal();
       Swal.fire({
         icon: "success",
@@ -173,6 +185,8 @@ const Ticket = () => {
         timer: 4000,
       });
       getTicketInfo();
+      getAllComments();
+      setComment("");
     } catch (error) {
       console.log(error);
       console.error(error);
@@ -184,9 +198,65 @@ const Ticket = () => {
       const response = await axios.get(
         `${process.env.REACT_APP_BACKEND_URL}/tickets/${ticketId}/comments`
       );
-      console.log("comments", response.data);
       setComments(response.data);
     } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleUploadPicture = (e) => {
+    const file = e.target.files[0];
+    setFile(file);
+    setFileName(e.target.value);
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setImagePreview(reader.result);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const submitReview = async () => {
+    if (review === "") {
+      Swal.fire({
+        icon: "warning",
+        title: "Oops...",
+        text: "Please fill in all required fields!",
+      });
+      return;
+    }
+    let imageUrl;
+
+    if (file) {
+      const fullStorageRef = storageRef(storage, STORAGE_KEY + fileName);
+      await uploadBytes(fullStorageRef, file);
+      try {
+        imageUrl = await getDownloadURL(fullStorageRef);
+      } catch (error) {
+        console.log(error);
+      }
+    } else {
+      imageUrl = null;
+    }
+
+    try {
+      const response = await axios.post(
+        `${process.env.REACT_APP_BACKEND_URL}/tickets/${ticketId}/review`,
+        {
+          ticketId: ticketId,
+          description: review,
+          url: imageUrl,
+        }
+      );
+      handleCloseReviewModal();
+      Swal.fire({
+        icon: "success",
+        title: "Your work has been saved",
+        showConfirmButton: true,
+        timer: 4000,
+      });
+      getTicketInfo();
+    } catch (error) {
+      console.log(error);
       console.error(error);
     }
   };
@@ -343,6 +413,71 @@ const Ticket = () => {
         </Box>
       </Modal>
 
+      {/* Review Ticket Modal */}
+
+      <Modal
+        sx={{ p: 5 }}
+        open={openReviewModal}
+        onClose={handleCloseReviewModal}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={style}>
+          <Typography
+            sx={{ p: 3 }}
+            id="modal-modal-title"
+            variant="h6"
+            component="h2"
+          >
+            Review ticket
+          </Typography>
+          <TextField
+            id="review"
+            label="review"
+            sx={{ width: "100%", pb: 2, backgroundColor: "#fff" }}
+            multiline
+            rows={4}
+            value={review}
+            onChange={(e) => setReview(e.target.value)}
+            inputProps={{
+              style: { backgroundColor: "#fff" },
+            }}
+          />
+          <Box>
+            <label>
+              <Button
+                variant="contained"
+                component="span"
+                sx={{ width: "100%" }}
+              >
+                Upload image
+              </Button>
+              <input
+                hidden
+                accept="image/*"
+                type="file"
+                onChange={(e) => handleUploadPicture(e)}
+              />
+            </label>
+            <Box sx={{ width: "200px", height: "200px" }}>
+              <img
+                style={{ width: "100%", height: "100%", objectFit: "contain" }}
+                src={imagePreview}
+                alt="preview"
+              />
+            </Box>
+          </Box>
+
+          <Button
+            sx={{ width: "100%" }}
+            variant="contained"
+            onClick={() => submitReview()}
+          >
+            Review and close Ticket
+          </Button>
+        </Box>
+      </Modal>
+
       <Box
         sx={{
           height: "100%",
@@ -358,23 +493,27 @@ const Ticket = () => {
             }}
           >
             <Typography variant="h6">Details</Typography>
-            <Box>
-              <Button
-                onClick={handleOpenEditTicketModal}
-                variant="contained"
-                sx={{ mr: 2 }}
-              >
-                Edit ticket information
-              </Button>
-              <Button
-                onClick={handleOpenStatusModal}
-                variant="contained"
-                sx={{ mr: 2 }}
-              >
-                Update Status
-              </Button>
-              <Button variant="contained">Close ticket</Button>
-            </Box>
+            {ticket.ticketStatusId !== 3 ? (
+              <Box>
+                <Button
+                  onClick={handleOpenEditTicketModal}
+                  variant="contained"
+                  sx={{ mr: 2 }}
+                >
+                  Edit ticket information
+                </Button>
+                <Button
+                  onClick={handleOpenStatusModal}
+                  variant="contained"
+                  sx={{ mr: 2 }}
+                >
+                  Update Status
+                </Button>
+                <Button onClick={handleOpenReviewModal} variant="contained">
+                  Upload Review
+                </Button>
+              </Box>
+            ) : null}
           </Box>
           <Box>
             <Box sx={{ display: "flex", justifyContent: "space-between" }}>
@@ -485,7 +624,8 @@ const Ticket = () => {
             <Box sx={{ py: "30px" }}>
               <Typography>Attachments:</Typography>
               {ticket.ticket_attachments &&
-              ticket.ticket_attachments.length > 0 ? (
+              ticket.ticket_attachments.length > 0 &&
+              ticket.ticket_attachments[0].url !== null ? (
                 <Box>
                   <img
                     alt="attachment img"
@@ -561,11 +701,43 @@ const Ticket = () => {
               <div>No comments available</div>
             )}
           </Box>
-          <Box>
-            <Typography>Ticket Reviews</Typography>
-            <Typography>There are no reviews for this ticket yet.</Typography>
-          </Box>
         </Box>
+      </Box>
+      <Box sx={{ display: "flex", justifyContent: "flex-end", width: "100%" }}>
+        <Paper sx={{ width: "50%", p: 5 }}>
+          <Box>
+            <Typography sx={{ pb: 4 }} variant="h5">
+              Ticket Reviews
+            </Typography>
+            {ticket?.ticket_reviews?.[0] ? (
+              <Box>
+                <Typography>{ticket.ticket_reviews[0].description}</Typography>
+                {ticket.ticket_reviews[0]?.ticket_review_attachments?.[0] ? (
+                  <Box sx={{ width: "300px" }}>
+                    <img
+                      alt="ticket review attachment"
+                      src={
+                        ticket.ticket_reviews[0].ticket_review_attachments[0]
+                          .url
+                      }
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                      }}
+                    ></img>
+                  </Box>
+                ) : null}
+              </Box>
+            ) : (
+              <>
+                <Typography>
+                  There are no reviews for this ticket yet.
+                </Typography>
+              </>
+            )}
+          </Box>
+        </Paper>
       </Box>
     </div>
   );
