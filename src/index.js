@@ -35,6 +35,8 @@ root.render(
     clientId={process.env.REACT_APP_AUTHO_CLIENT_ID}
     authorizationParams={{
       redirect_uri: window.location.origin,
+      audience: process.env.REACT_APP_AUDIENCE,
+      scope: process.env.REACT_APP_SCOPE,
     }}
   >
     <AppWithAuth />

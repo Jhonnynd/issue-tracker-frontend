@@ -52,7 +52,8 @@ const ProjectsList = () => {
 
   const fetchProjects = async () => {
     try {
-      const fetchedProjects = await getAllProjects();
+      const token = localStorage.getItem("Token");
+      const fetchedProjects = await getAllProjects(token);
       setProjects(fetchedProjects);
       console.log(location.pathname);
     } catch (error) {

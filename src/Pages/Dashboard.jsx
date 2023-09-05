@@ -14,6 +14,7 @@ const Dashboard = () => {
   const { getAccessTokenSilently, isAuthenticated, user } = useAuth0();
 
   useEffect(() => {
+    console.log(process.env.REACT_APP_SCOPE);
     const checkLogin = async () => {
       const accessToken = await getAccessTokenSilently({
         authorizationParams: {
