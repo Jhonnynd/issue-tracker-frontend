@@ -1,18 +1,27 @@
-import React from "react";
+import React, { useContext } from "react";
 import ProjectsList from "../Components/ProjectsList";
 import { Box, Button, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import { UserContext } from "../App";
+import { showAdminRoleAlert } from "../utils/alerts";
 
 const Projects = () => {
+  const { currentUser } = useContext(UserContext);
   const navigate = useNavigate();
   return (
     <Box sx={{}}>
       <Box>
         <Typography variant="h5" sx={{ mb: "20px" }}>
-          My Projects
+          All Projects
         </Typography>
         <Button
-          onClick={() => navigate("/projectform")}
+          onClick={() => {
+            if (currentUser.userRoleId !== 1 || currentUser.userRoleId !== 2) {
+              showAdminRoleAlert();
+            } else {
+              navigate("/projectform");
+            }
+          }}
           variant="contained"
           sx={{ mb: "20px" }}
         >

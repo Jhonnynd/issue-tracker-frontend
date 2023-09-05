@@ -11,10 +11,12 @@ import CreateTicket from "./Pages/CreateTicket";
 import UpdateProject from "./Pages/UpdateProject";
 import Ticket from "./Pages/Ticket";
 import Project from "./Pages/Project";
-import { useEffect, useState } from "react";
+import { useEffect, useState, createContext } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import Auth0 from "./Pages/Auth0";
 import axios from "axios";
+
+export const UserContext = createContext({});
 
 function App() {
   const { isAuthenticated, getAccessTokenSilently, loginWithRedirect, user } =
@@ -49,37 +51,39 @@ function App() {
     checkLogin();
   }, [user, isAuthenticated]);
 
-  const location = useLocation();
-
   useEffect(() => {
     if (!isAuthenticated) {
       loginWithRedirect();
     }
   });
 
+  console.log("currentUser", currentUser);
+
   return (
     <>
       {isAuthenticated ? (
-        <div className="appContainer">
-          <div className="appContent">
+        <UserContext.Provider value={{ currentUser }}>
+          <div className="appContainer">
             <Navbar />
-            <Routes>
-              <Route path="/" element={<Dashboard />} />
-              <Route path="/profile" element={<Profile />} />
-              <Route path="/projects" element={<Projects />} />
-              <Route path="/project/:projectId" element={<Project />} />
-              <Route
-                path="/updateproject/:projectId"
-                element={<UpdateProject />}
-              />
-              <Route path="/tickets" element={<Tickets />} />
-              <Route path="/ticket/:ticketId" element={<Ticket />} />
-              <Route path="/createticket" element={<CreateTicket />} />
-              <Route path="/projectform" element={<ProjectForm />} />
-              <Route path="/userroles" element={<ManageUserRoles />} />
-            </Routes>
+            <div className="appContent">
+              <Routes>
+                <Route path="/" element={<Dashboard />} />
+                <Route path="/profile" element={<Profile />} />
+                <Route path="/projects" element={<Projects />} />
+                <Route path="/project/:projectId" element={<Project />} />
+                <Route
+                  path="/updateproject/:projectId"
+                  element={<UpdateProject />}
+                />
+                <Route path="/tickets" element={<Tickets />} />
+                <Route path="/ticket/:ticketId" element={<Ticket />} />
+                <Route path="/createticket" element={<CreateTicket />} />
+                <Route path="/projectform" element={<ProjectForm />} />
+                <Route path="/userroles" element={<ManageUserRoles />} />
+              </Routes>
+            </div>
           </div>
-        </div>
+        </UserContext.Provider>
       ) : (
         loginWithRedirect()
       )}
