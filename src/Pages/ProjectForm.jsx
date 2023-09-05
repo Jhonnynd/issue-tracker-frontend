@@ -83,19 +83,14 @@ const ProjectForm = () => {
   const createNewProject = async (e) => {
     e.preventDefault();
     let url;
-
-    // Declare storage reference and upload file
     const fullStorageRef = storageRef(storage, STORAGE_KEY + fileName);
     await uploadBytes(fullStorageRef, file);
-
-    // Get download URL
     try {
       url = await getDownloadURL(fullStorageRef);
       console.log(url);
       setImageUrl(url);
     } catch (error) {
       console.log(error);
-      // Handle the error appropriately
     }
 
     if (!url || projectTitle === "" || projectDescription === "") {
@@ -146,7 +141,7 @@ const ProjectForm = () => {
       });
     }
   };
-
+  console.log(usersData);
   return (
     <div>
       <Box

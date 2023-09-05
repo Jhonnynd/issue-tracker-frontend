@@ -88,8 +88,6 @@ const Ticket = () => {
     getTicketInfo();
     getTicketTypes();
     getAllComments();
-
-    console.log("ticket", ticket);
   }, []);
 
   const getTicketInfo = async () => {
@@ -130,7 +128,6 @@ const Ticket = () => {
         `${process.env.REACT_APP_BACKEND_URL}/tickets/${ticketId}/status`,
         { ticketStatusId: selectedStatus }
       );
-      console.log(selectedStatus);
       handleCloseStatusModal();
       Swal.fire({
         icon: "success",
@@ -147,7 +144,6 @@ const Ticket = () => {
 
   const updateTicket = async () => {
     try {
-      console.log(`${process.env.REACT_APP_BACKEND_URL}tickets/${ticketId}`);
       const response = await axios.put(
         `${process.env.REACT_APP_BACKEND_URL}/tickets/${ticketId}`,
         {
@@ -173,7 +169,6 @@ const Ticket = () => {
 
   const submitComment = async () => {
     try {
-      console.log("hi");
       const response = await axios.post(
         `${process.env.REACT_APP_BACKEND_URL}/tickets/${ticketId}/comments`,
         {
@@ -182,7 +177,6 @@ const Ticket = () => {
           description: comment,
         }
       );
-      console.log(selectedStatus);
       handleCloseStatusModal();
       Swal.fire({
         icon: "success",
@@ -204,7 +198,6 @@ const Ticket = () => {
       const response = await axios.get(
         `${process.env.REACT_APP_BACKEND_URL}/tickets/${ticketId}/comments`
       );
-      console.log("comments", response.data);
       setComments(response.data);
     } catch (error) {
       console.error(error);
@@ -246,7 +239,6 @@ const Ticket = () => {
     }
 
     try {
-      console.log("hi");
       const response = await axios.post(
         `${process.env.REACT_APP_BACKEND_URL}/tickets/${ticketId}/review`,
         {
@@ -632,7 +624,8 @@ const Ticket = () => {
             <Box sx={{ py: "30px" }}>
               <Typography>Attachments:</Typography>
               {ticket.ticket_attachments &&
-              ticket.ticket_attachments.length > 0 ? (
+              ticket.ticket_attachments.length > 0 &&
+              ticket.ticket_attachments[0].url !== null ? (
                 <Box>
                   <img
                     alt="attachment img"

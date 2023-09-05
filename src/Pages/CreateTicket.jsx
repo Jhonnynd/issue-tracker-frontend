@@ -96,18 +96,18 @@ export default function CreateTicket() {
   };
 
   const submit = async () => {
+    let url;
+    console.log(storage, STORAGE_KEY + fileName, file);
     const fullStorageRef = storageRef(storage, STORAGE_KEY + fileName);
-    await uploadBytes(fullStorageRef, file).then(() => {
-      getDownloadURL(fullStorageRef)
-        .then((url) => {
-          console.log(url);
-          setImageUrl(url);
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-    });
+    await uploadBytes(fullStorageRef, file);
     try {
+      url = await getDownloadURL(fullStorageRef);
+      console.log(url);
+    } catch (error) {
+      console.log(error);
+    }
+    try {
+      console.log(url);
       const dataToSend = {
         title: title,
         description: description,
@@ -117,7 +117,7 @@ export default function CreateTicket() {
         ticketStatusId: 1, // change later  - 1 is New
         ticketPriorityId: selectedPriority,
         ticketTypeId: selectedType,
-        url: imageUrl,
+        url: url,
       };
 
       const response = await axios.post(
