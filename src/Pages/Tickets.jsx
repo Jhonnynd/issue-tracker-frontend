@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import ListSubheader from "@mui/material/ListSubheader";
 import List from "@mui/material/List";
 import ListItemButton from "@mui/material/ListItemButton";
@@ -17,8 +17,11 @@ import axios from "axios";
 import { Box, Button, Chip } from "@mui/material";
 import CreateTicketModal from "../Components/CreateTicketModal";
 import { useNavigate } from "react-router-dom";
+import { showAdminRoleAlert } from "../utils/alerts";
+import { UserContext } from "../App";
 
 const Tickets = () => {
+  const { currentUser } = useContext(UserContext);
   const navigate = useNavigate();
 
   const [openSections, setOpenSections] = useState([]);
@@ -153,8 +156,15 @@ const Tickets = () => {
           </Box>
         ))}
       </List>
-      <Button variant="contained" onClick={() => navigate("/createticket")}>
-        Create a ticket
+      <Button
+        onClick={() => {
+          if (showAdminRoleAlert(currentUser.userRoleId)) {
+            navigate("/createticket");
+          }
+        }}
+        variant="contained"
+      >
+        Create a new Ticket
       </Button>
     </div>
   );

@@ -10,12 +10,14 @@ import {
   Typography,
 } from "@mui/material";
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import DefaultImage from "../img/image-placeholder.png";
 import Swal from "sweetalert2";
-
+import { showAdminRoleAlert } from "../utils/alerts";
+import { UserContext } from "../App";
 const Project = () => {
+  const { currentUser } = useContext(UserContext);
   const { projectId } = useParams();
   const navigate = useNavigate();
 
@@ -115,14 +117,23 @@ const Project = () => {
         <Paper sx={{ p: 3 }}>
           <Box sx={{ pt: 1, pb: 3 }}>
             <Button
-              onClick={() => navigate(`/updateproject/${project.id}`)}
+              onClick={() => {
+                if (showAdminRoleAlert(currentUser.userRoleId)) {
+                  navigate(`/updateproject/${project.id}`);
+                }
+              }}
               variant="contained"
             >
               Edit project
             </Button>
+
             <Button
               sx={{ ml: 2 }}
-              onClick={() => deleteProject(project.id)}
+              onClick={() => {
+                if (showAdminRoleAlert(currentUser.userRoleId)) {
+                  deleteProject(project.id);
+                }
+              }}
               variant="contained"
               color="error"
             >
@@ -160,20 +171,6 @@ const Project = () => {
               <Typography sx={{ mt: 4, mb: 2 }} variant="h6" component="div">
                 Tickets for this project
               </Typography>
-              {/* {ticketsFromProject.map((ticket) => {
-                return (
-                  <ListItem key={user.id}>
-                    <ListItemText
-                      primary={
-                        user.user.user_role
-                          ? `${user.user.first_name} ${user.user.last_name} (${user.user.user_role.description})`
-                          : null
-                      }
-                      secondary={user.email}
-                    />
-                  </ListItem>
-                );
-              })} */}
 
               <List component="div" disablePadding>
                 {ticketsFromProject.map((ticket, j) => (
@@ -241,7 +238,11 @@ const Project = () => {
                   </ListItemButton>
                 ))}
                 <Button
-                  onClick={() => navigate("/createticket")}
+                  onClick={() => {
+                    if (showAdminRoleAlert(currentUser.userRoleId)) {
+                      navigate("/createticket");
+                    }
+                  }}
                   variant="contained"
                 >
                   Create a new Ticket

@@ -61,7 +61,7 @@ const Navbar = () => {
       path: "/notifications",
     },
     { icon: AccountCircleIcon, label: "My Profile", path: "/profile" },
-    { icon: LogoutIcon, label: "logout", action: handleLogout },
+    { icon: LogoutIcon, label: "Logout", action: handleLogout },
   ];
 
   return (

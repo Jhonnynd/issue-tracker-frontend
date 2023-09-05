@@ -2,7 +2,7 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
-import React, { useEffect } from "react";
+import React, { useContext, useEffect } from "react";
 import { useState } from "react";
 import {
   FormControl,
@@ -21,10 +21,16 @@ import { getAllProjects } from "../utils/ProjectFunctions";
 import axios from "axios";
 import ImagePlaceHolder from "../img/image-placeholder.png";
 import Swal from "sweetalert2";
+import { UserContext } from "../App";
+import { showAdminRoleAlert } from "../utils/alerts";
+import { useNavigate } from "react-router";
 
 const STORAGE_KEY = "images/";
 
 export default function CreateTicket() {
+  const { currentUser } = useContext(UserContext);
+
+  const navigate = useNavigate();
   const [projects, setProjects] = useState([]);
   const [selectedProject, setSelectedProject] = useState(null);
 
@@ -50,6 +56,12 @@ export default function CreateTicket() {
     getAllTicketTypes();
 
     console.log("priorities and types", priorities, types);
+  }, []);
+
+  useEffect(() => {
+    if (!showAdminRoleAlert(currentUser.userRoleId)) {
+      navigate("/");
+    }
   }, []);
 
   const getAllTicketTypes = async () => {

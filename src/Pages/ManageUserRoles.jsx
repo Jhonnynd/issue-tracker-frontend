@@ -9,10 +9,16 @@ import {
   Typography,
 } from "@mui/material";
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Swal from "sweetalert2";
+import { UserContext } from "../App";
+import { showAdminRoleAlert } from "../utils/alerts";
+import { useNavigate } from "react-router";
 
 const ManageUserRoles = () => {
+  const navigate = useNavigate();
+
+  const { currentUser } = useContext(UserContext);
   const [users, setUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
 
@@ -22,6 +28,12 @@ const ManageUserRoles = () => {
   useEffect(() => {
     getAllUsers();
     getAllUserRoles();
+  }, []);
+
+  useEffect(() => {
+    if (!showAdminRoleAlert(currentUser.userRoleId)) {
+      navigate("/");
+    }
   }, []);
 
   const getAllUserRoles = async () => {

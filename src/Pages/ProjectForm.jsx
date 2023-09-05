@@ -1,5 +1,5 @@
 import { Box, Button, TextField, Typography } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
@@ -18,6 +18,8 @@ import {
 } from "firebase/storage";
 import { storage } from "../firebase";
 import ImagePlaceHolder from "../img/image-placeholder.png";
+import { UserContext } from "../App";
+import { showAdminRoleAlert } from "../utils/alerts";
 const STORAGE_KEY = "images/";
 const ProjectForm = () => {
   const [projectTitle, setProjectTitle] = useState("");
@@ -29,6 +31,14 @@ const ProjectForm = () => {
   const [fileName, setFileName] = useState(null);
   const [imagePreview, setImagePreview] = useState(ImagePlaceHolder);
   const [imageUrl, setImageUrl] = useState(null);
+
+  const { currentUser } = useContext(UserContext);
+
+  useEffect(() => {
+    if (!showAdminRoleAlert(currentUser.userRoleId)) {
+      navigate("/");
+    }
+  }, []);
 
   const navigate = useNavigate();
   useEffect(() => {

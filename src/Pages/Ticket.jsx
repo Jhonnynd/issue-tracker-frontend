@@ -24,10 +24,12 @@ import {
   getDownloadURL,
 } from "firebase/storage";
 import { storage } from "../firebase";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Swal from "sweetalert2";
 import ImagePlaceHolder from "../img/image-placeholder.png";
+import { UserContext } from "../App";
+import { showAdminRoleAlert } from "../utils/alerts";
 
 const STORAGE_KEY = "images/";
 
@@ -44,6 +46,7 @@ const style = {
 };
 
 const Ticket = () => {
+  const { currentUser } = useContext(UserContext);
   const [ticket, setTicket] = useState({});
   const { ticketId } = useParams();
 
@@ -496,12 +499,17 @@ const Ticket = () => {
             {ticket.ticketStatusId !== 3 ? (
               <Box>
                 <Button
-                  onClick={handleOpenEditTicketModal}
+                  onClick={() => {
+                    if (showAdminRoleAlert(currentUser.userRoleId)) {
+                      handleOpenEditTicketModal();
+                    }
+                  }}
                   variant="contained"
                   sx={{ mr: 2 }}
                 >
                   Edit ticket information
                 </Button>
+
                 <Button
                   onClick={handleOpenStatusModal}
                   variant="contained"

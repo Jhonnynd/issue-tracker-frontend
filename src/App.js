@@ -33,8 +33,8 @@ function App() {
           scope: process.env.REACT_APP_SCOPE,
         },
       });
-      console.log("Access Token : ", accessToken);
-      console.log("User: ", user);
+      // console.log("Access Token : ", accessToken);
+      // console.log("User: ", user);
       if (
         isAuthenticated &&
         accessToken !== null &&
@@ -82,7 +82,7 @@ function App() {
                 <Route path="/projectform" element={<ProjectForm />} />
                 <Route path="/userroles" element={<ManageUserRoles />} />
                 <Route path="/calendar" element={<CalendarPage />} />
-        </Routes>
+              </Routes>
             </div>
           </div>
         </UserContext.Provider>

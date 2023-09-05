@@ -16,9 +16,7 @@ const Projects = () => {
         </Typography>
         <Button
           onClick={() => {
-            if (currentUser.userRoleId !== 1 || currentUser.userRoleId !== 2) {
-              showAdminRoleAlert();
-            } else {
+            if (showAdminRoleAlert(currentUser.userRoleId)) {
               navigate("/projectform");
             }
           }}
