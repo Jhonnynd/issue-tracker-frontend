@@ -11,6 +11,7 @@ import CreateTicket from "./Pages/CreateTicket";
 import UpdateProject from "./Pages/UpdateProject";
 import Ticket from "./Pages/Ticket";
 import Project from "./Pages/Project";
+import CalendarPage from "./Pages/CalendarPage";
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
           <Route path="/createticket" element={<CreateTicket />} />
           <Route path="/projectform" element={<ProjectForm />} />
           <Route path="/userroles" element={<ManageUserRoles />} />
+          <Route path="/calendar" element={<CalendarPage />} />
         </Routes>
       </div>
     </div>

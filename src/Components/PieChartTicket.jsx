@@ -46,18 +46,13 @@ const PieChartTicket = ({ ticketData }) => {
           labelLine: {
             show: false,
           },
-          data: [
-            { value: 484, name: "Low" },
-            { value: 484, name: "Medium" },
-            { value: 300, name: "High" },
-          ],
+          data: ticketData,
         },
       ],
     };
 
     chartInstance.setOption(option);
 
-    // For responsive design
     window.addEventListener("resize", chartInstance.resize);
 
     return () => {
