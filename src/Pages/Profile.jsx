@@ -96,11 +96,11 @@ const Profile = () => {
         sx={{
           display: "flex",
           flexDirection: "column",
-          width: "400px",
+          width: "800px",
           p: 5,
         }}
       >
-        <Typography>Update Profile</Typography>
+        <Typography variant="h2">Update Profile</Typography>
         <Box
           sx={{
             display: "flex",
@@ -140,7 +140,7 @@ const Profile = () => {
             value={userInfo.last_name}
           />
 
-          <Box>
+          <Box sx={{ width: "400px" }}>
             <Typography>Select role</Typography>
             <FormControl fullWidth sx={{ bgcolor: "white" }}>
               <Select
@@ -160,7 +160,11 @@ const Profile = () => {
               </Select>
             </FormControl>
           </Box>
-          <Button onClick={() => submit()} variant="contained">
+          <Button
+            sx={{ width: "200px" }}
+            onClick={() => submit()}
+            variant="contained"
+          >
             Update
           </Button>
         </Box>

@@ -176,7 +176,7 @@ const Ticket = () => {
         `${process.env.REACT_APP_BACKEND_URL}/tickets/${ticketId}/comments`,
         {
           ticketId: ticketId,
-          userId: 1,
+          userId: currentUser.id,
           description: comment,
         }
       );
@@ -485,9 +485,23 @@ const Ticket = () => {
         sx={{
           height: "100%",
           display: "flex",
+          flexDirection: {
+            xs: "column",
+            lg: "row",
+          },
         }}
       >
-        <Paper sx={{ p: 2, width: "50%" }}>
+        <Paper
+          sx={{
+            height: "800px",
+            backgroundColor: "#e4e6f3",
+            p: 2,
+            width: {
+              lg: "50%",
+              xs: "100%",
+            },
+          }}
+        >
           <Box
             sx={{
               display: "flex",
@@ -507,7 +521,7 @@ const Ticket = () => {
                   variant="contained"
                   sx={{ mr: 2 }}
                 >
-                  Edit ticket information
+                  Edit information
                 </Button>
 
                 <Button
@@ -636,16 +650,20 @@ const Ticket = () => {
               {ticket.ticket_attachments &&
               ticket.ticket_attachments.length > 0 &&
               ticket.ticket_attachments[0].url !== null ? (
-                <Box>
-                  <img
-                    alt="attachment img"
-                    style={{
-                      objectFit: "cover",
-                      width: "100%",
-                      height: "100%",
-                    }}
-                    src={ticket.ticket_attachments[0].url}
-                  ></img>
+                <Box
+                  sx={{ height: "200px", width: "200px", maxHeight: "200px" }}
+                >
+                  <a target="_blank" href={ticket.ticket_attachments[0].url}>
+                    <img
+                      alt="attachment img"
+                      style={{
+                        objectFit: "cover",
+                        width: "100%",
+                        height: "100%",
+                      }}
+                      src={ticket.ticket_attachments[0].url}
+                    ></img>
+                  </a>
                 </Box>
               ) : (
                 `There are no attachments for this ticket.`
@@ -655,7 +673,11 @@ const Ticket = () => {
         </Paper>
         <Box
           sx={{
-            width: "50%",
+            width: {
+              lg: "50%",
+              xs: "100%",
+            },
+            p: 2,
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
@@ -663,9 +685,9 @@ const Ticket = () => {
           }}
         >
           <Box>
-            <Typography>Comments:</Typography>
+            <Typography variant="h4">Comments:</Typography>
           </Box>
-          <Box sx={{ display: "flex", width: "85%" }}>
+          <Box sx={{ display: "flex", width: "95%" }}>
             <TextField
               value={comment}
               onChange={(e) => setComment(e.target.value)}
@@ -681,74 +703,91 @@ const Ticket = () => {
               Submit
             </Button>
           </Box>
-          <Box
+          <Box sx={{ width: "100%" }}>
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                width: "85%",
+                height: "300px",
+                overflow: "auto",
+              }}
+            >
+              {Array.isArray(comments) ? (
+                comments.map((comment) => {
+                  return (
+                    <>
+                      <ListItem
+                        className="ListItem"
+                        sx={{
+                          display: "flex",
+                          width: "50%",
+                          justifyContent: "center",
+                          flexDirection: "column",
+                        }}
+                        alignItems="flex-start"
+                      >
+                        <ListItemText
+                          primary={`${comment.user.first_name} ${comment.user.last_name} (${comment.user.user_role.description}) ${comment.user.email} `}
+                          secondary={comment.description}
+                        />
+                      </ListItem>
+                      <Divider />
+                    </>
+                  );
+                })
+              ) : (
+                <div>No comments available</div>
+              )}
+            </Box>
+          </Box>
+          <Paper
+            id="paper"
             sx={{
-              display: "flex",
-              flexDirection: "column",
-              width: "85%",
-              height: "300px",
-              overflow: "auto",
+              width: "95%",
+              p: 5,
             }}
           >
-            {Array.isArray(comments) ? (
-              comments.map((comment) => {
-                return (
-                  <>
-                    <ListItem
-                      sx={{ display: "flex", flexDirection: "column" }}
-                      alignItems="flex-start"
-                    >
-                      <ListItemText
-                        primary={`${comment.user.first_name} ${comment.user.last_name} (${comment.user.user_role.description}) ${comment.user.email} `}
-                        secondary={comment.description}
-                      />
-                    </ListItem>
-                    <Divider />
-                  </>
-                );
-              })
-            ) : (
-              <div>No comments available</div>
-            )}
-          </Box>
+            <Box>
+              <Typography sx={{ pb: 4 }} variant="h4">
+                Ticket Reviews
+              </Typography>
+              {ticket?.ticket_reviews?.[0] ? (
+                <Box>
+                  <Typography>
+                    {ticket.ticket_reviews[0].description}
+                  </Typography>
+                  {ticket.ticket_reviews[0]?.ticket_review_attachments?.[0] ? (
+                    <Box sx={{ width: "300px" }}>
+                      <img
+                        alt="ticket review attachment"
+                        src={
+                          ticket.ticket_reviews[0].ticket_review_attachments[0]
+                            .url
+                        }
+                        style={{
+                          width: "100%",
+                          height: "100%",
+                          objectFit: "cover",
+                        }}
+                      ></img>
+                    </Box>
+                  ) : null}
+                </Box>
+              ) : (
+                <>
+                  <Typography>
+                    There are no reviews for this ticket yet.
+                  </Typography>
+                </>
+              )}
+            </Box>
+          </Paper>
         </Box>
       </Box>
-      <Box sx={{ display: "flex", justifyContent: "flex-end", width: "100%" }}>
-        <Paper sx={{ width: "50%", p: 5 }}>
-          <Box>
-            <Typography sx={{ pb: 4 }} variant="h5">
-              Ticket Reviews
-            </Typography>
-            {ticket?.ticket_reviews?.[0] ? (
-              <Box>
-                <Typography>{ticket.ticket_reviews[0].description}</Typography>
-                {ticket.ticket_reviews[0]?.ticket_review_attachments?.[0] ? (
-                  <Box sx={{ width: "300px" }}>
-                    <img
-                      alt="ticket review attachment"
-                      src={
-                        ticket.ticket_reviews[0].ticket_review_attachments[0]
-                          .url
-                      }
-                      style={{
-                        width: "100%",
-                        height: "100%",
-                        objectFit: "cover",
-                      }}
-                    ></img>
-                  </Box>
-                ) : null}
-              </Box>
-            ) : (
-              <>
-                <Typography>
-                  There are no reviews for this ticket yet.
-                </Typography>
-              </>
-            )}
-          </Box>
-        </Paper>
-      </Box>
+      <Box
+        sx={{ display: "flex", justifyContent: "flex-end", width: "100%" }}
+      ></Box>
     </div>
   );
 };

@@ -14,8 +14,7 @@ import StarBorder from "@mui/icons-material/StarBorder";
 import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
 import FolderIcon from "@mui/icons-material/Folder";
 import axios from "axios";
-import { Box, Button, Chip } from "@mui/material";
-import CreateTicketModal from "../Components/CreateTicketModal";
+import { Box, Button, Chip, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { showAdminRoleAlert } from "../utils/alerts";
 import { UserContext } from "../App";
@@ -58,7 +57,10 @@ const Tickets = () => {
   };
 
   return (
-    <div>
+    <Box sx={{ p: 4 }}>
+      <Typography sx={{ pb: 2 }} variant="h4">
+        All Tickets
+      </Typography>
       <List
         sx={{
           width: "100%",
@@ -166,7 +168,7 @@ const Tickets = () => {
       >
         Create a new Ticket
       </Button>
-    </div>
+    </Box>
   );
 };
 

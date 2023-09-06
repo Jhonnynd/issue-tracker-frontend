@@ -3,7 +3,7 @@ import { Calendar, momentLocalizer } from "react-big-calendar";
 import moment from "moment";
 
 import "react-big-calendar/lib/css/react-big-calendar.css";
-import { Box } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import axios from "axios";
 import { useNavigate } from "react-router";
 const localizer = momentLocalizer(moment);
@@ -62,6 +62,9 @@ const CalendarPage = () => {
 
   return (
     <Box sx={{ p: 6 }}>
+      <Typography sx={{ pb: 2 }} variant="h4">
+        Calendar of changes
+      </Typography>
       <Calendar
         localizer={localizer}
         events={tickets}
@@ -80,9 +83,3 @@ const CalendarPage = () => {
 };
 
 export default CalendarPage;
-
-// const MyCalendar = (props) => (
-//   <div>
-
-//   </div>
-// );

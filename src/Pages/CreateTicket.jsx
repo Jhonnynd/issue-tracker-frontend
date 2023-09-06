@@ -124,9 +124,9 @@ export default function CreateTicket() {
         title: title,
         description: description,
         projectId: selectedProject,
-        submitterId: 1, // change later - user that Created the Ticket
+        submitterId: currentUser.id, // user that Created the Ticket
         assignedUserId: selectedUser,
-        ticketStatusId: 1, // change later  - 1 is New
+        ticketStatusId: 1, //  1 is New
         ticketPriorityId: selectedPriority,
         ticketTypeId: selectedType,
         url: url,

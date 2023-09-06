@@ -116,7 +116,7 @@ const ProjectForm = () => {
       const dataToSend = {
         title: projectTitle,
         description: projectDescription,
-        submitter_id: 1,
+        submitter_id: currentUser.id,
         userIds: checked,
         url: url,
       };

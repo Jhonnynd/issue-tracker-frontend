@@ -92,6 +92,9 @@ const ManageUserRoles = () => {
   return (
     <Box sx={{ width: "500px" }}>
       <Box sx={{ minWidth: 120 }}>
+        <Typography variant="h2" sx={{ pb: 4 }}>
+          Manage user roles
+        </Typography>
         <Typography>Select User</Typography>
         <FormControl fullWidth sx={{ bgcolor: "white" }}>
           <InputLabel required id="demo-simple-select-label">
@@ -116,7 +119,7 @@ const ManageUserRoles = () => {
           </Select>
         </FormControl>
       </Box>
-      <Box>
+      <Box sx={{ py: 2 }}>
         <Typography>Select new role for the user</Typography>
         <FormControl fullWidth sx={{ bgcolor: "white" }}>
           <InputLabel required id="demo-simple-select-label">

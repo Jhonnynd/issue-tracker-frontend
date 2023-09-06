@@ -1,4 +1,4 @@
-import { Box, Typography } from "@mui/material";
+import { Box, Button, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import PieChartTicket from "../Components/PieChartTicket";
 import ProjectsList from "../Components/ProjectsList";
@@ -9,7 +9,6 @@ import axios from "axios";
 
 const Dashboard = () => {
   const [allTickets, setAllTickets] = useState([]);
-
   const [ticketTypes, setTicketTypes] = useState({});
   const [ticketPriorities, setTicketPriorities] = useState({});
   const [ticketStatuses, setTicketStatuses] = useState({});
@@ -71,7 +70,7 @@ const Dashboard = () => {
     <Box>
       <Box>
         <Box sx={{ pb: "20px" }}>
-          <Typography sx={{ pb: "20px" }} variant="h5">
+          <Typography sx={{ pb: "20px" }} variant="h4">
             Projects
           </Typography>
           <Typography
@@ -84,22 +83,40 @@ const Dashboard = () => {
         </Box>
         <ProjectsList />
       </Box>
+
       <Box
         sx={{
           display: "flex",
-          flexDirection: "row",
-          justifyContent: "space-between",
+          flexDirection: {
+            xs: "column",
+            md: "row",
+          },
+          justifyContent: "center",
+          gap: "30px",
           width: "100%",
           pt: "100px",
         }}
       >
-        {ticketTypes.length > 0 && <PieChartTicket ticketData={ticketTypes} />}
-        {ticketPriorities.length > 0 && (
-          <PieChartTicket ticketData={ticketPriorities} />
-        )}
-        {ticketStatuses.length > 0 && (
-          <PieChartTicket ticketData={ticketStatuses} />
-        )}
+        <Box sx={{ width: "100%" }}>
+          <Typography variant="h4">Ticket Types</Typography>
+          {ticketTypes.length > 0 && (
+            <PieChartTicket ticketData={ticketTypes} />
+          )}
+        </Box>
+
+        <Box sx={{ width: "100%" }}>
+          <Typography variant="h4">Ticket Priorities</Typography>
+          {ticketPriorities.length > 0 && (
+            <PieChartTicket ticketData={ticketPriorities} />
+          )}
+        </Box>
+
+        <Box sx={{ width: "100%" }}>
+          <Typography variant="h4">Ticket Statuses</Typography>
+          {ticketStatuses.length > 0 && (
+            <PieChartTicket ticketData={ticketStatuses} />
+          )}
+        </Box>
       </Box>
     </Box>
   );

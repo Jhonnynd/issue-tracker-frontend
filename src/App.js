@@ -16,6 +16,7 @@ import { useEffect, useState, createContext } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import Auth0 from "./Pages/Auth0";
 import axios from "axios";
+import { Box } from "@mui/material";
 
 export const UserContext = createContext({});
 
@@ -43,9 +44,15 @@ function App() {
         // post to db
         const userInfo = await axios.post(
           `${process.env.REACT_APP_BACKEND_URL}/users/login`,
-          user
+          user,
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+            },
+          }
         );
         console.log(userInfo.data.checkedUser);
+
         setCurrentUser(userInfo.data.checkedUser);
       }
     };
@@ -68,9 +75,18 @@ function App() {
     <>
       {isAuthenticated ? (
         <UserContext.Provider value={{ currentUser, updateCurrentUser }}>
-          <div className="appContainer">
+          <Box
+            className="appContainer"
+            sx={{
+              display: {
+                md: "flex",
+              },
+              width: "100%",
+              height: "100vh",
+            }}
+          >
             <Navbar />
-            <div className="appContent">
+            <Box className="appContent">
               <Routes>
                 <Route path="/" element={<Dashboard />} />
                 <Route path="/profile" element={<Profile />} />
@@ -87,8 +103,8 @@ function App() {
                 <Route path="/userroles" element={<ManageUserRoles />} />
                 <Route path="/calendar" element={<CalendarPage />} />
               </Routes>
-            </div>
-          </div>
+            </Box>
+          </Box>
         </UserContext.Provider>
       ) : (
         loginWithRedirect()

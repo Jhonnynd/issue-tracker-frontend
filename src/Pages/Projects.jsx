@@ -11,7 +11,7 @@ const Projects = () => {
   return (
     <Box sx={{}}>
       <Box>
-        <Typography variant="h5" sx={{ mb: "20px" }}>
+        <Typography variant="h4" sx={{ mb: "20px" }}>
           All Projects
         </Typography>
         <Button
