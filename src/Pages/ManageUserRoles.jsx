@@ -74,7 +74,7 @@ const ManageUserRoles = () => {
         userRoleId: selectedUserRole,
       };
       await axios.put(
-        `${process.env.REACT_APP_BACKEND_URL}/users/${selectedUser}`,
+        `${process.env.REACT_APP_BACKEND_URL}/users/${selectedUser}/role`,
         data
       );
       Swal.fire({
@@ -90,8 +90,9 @@ const ManageUserRoles = () => {
   };
 
   return (
-    <div>
+    <Box sx={{ width: "500px" }}>
       <Box sx={{ minWidth: 120 }}>
+        <Typography>Select User</Typography>
         <FormControl fullWidth sx={{ bgcolor: "white" }}>
           <InputLabel required id="demo-simple-select-label">
             Select user
@@ -143,7 +144,7 @@ const ManageUserRoles = () => {
       <Button variant="contained" onClick={(e) => submit(e)}>
         Submit
       </Button>
-    </div>
+    </Box>
   );
 };
 

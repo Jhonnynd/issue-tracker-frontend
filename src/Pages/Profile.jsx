@@ -15,10 +15,11 @@ import {
   Typography,
 } from "@mui/material";
 import axios from "axios";
+import Swal from "sweetalert2";
 
 const Profile = () => {
   const navigate = useNavigate();
-  const { currentUser } = useContext(UserContext);
+  const { currentUser, updateCurrentUser } = useContext(UserContext);
   const [userInfo, setUserInfo] = useState({
     email: "" || currentUser.email,
     first_name: "" || currentUser.first_name,
@@ -40,9 +41,32 @@ const Profile = () => {
 
   const submit = async () => {
     try {
-      const response = await axios.get(
-        `${process.env.REACT_APP_BACKEND_URL}/users/userroles/`
+      const dataToSend = {
+        email: userInfo.email,
+        firstName: userInfo.first_name,
+        lastName: userInfo.last_name,
+        userRoleId: userInfo.userRoleId,
+      };
+
+      const response = await axios.put(
+        `${process.env.REACT_APP_BACKEND_URL}/users/${currentUser.id}/`,
+        dataToSend
       );
+
+      updateCurrentUser({
+        ...currentUser,
+        email: userInfo.email,
+        first_name: userInfo.first_name,
+        last_name: userInfo.last_name,
+        userRoleId: userInfo.userRoleId,
+      });
+
+      Swal.fire({
+        icon: "success",
+        title: response.data.message,
+        showConfirmButton: true,
+        timer: 4000,
+      });
     } catch (error) {
       console.error("Error:", error);
     }
@@ -85,30 +109,33 @@ const Profile = () => {
             pt: "50px",
           }}
         >
-          <Typography>Email</Typography>
           <TextField
             sx={{ width: "400px" }}
             id="email"
             label="Email"
-            variant="standard"
+            inputProps={{
+              style: { backgroundColor: "white" },
+            }}
             onChange={(e) => updateField(e, "email")}
             value={userInfo.email}
           />
-          <Typography>First Name</Typography>
           <TextField
             sx={{ width: "400px" }}
             id="first_name"
             label="First Name"
-            variant="standard"
+            inputProps={{
+              style: { backgroundColor: "white" },
+            }}
             onChange={(e) => updateField(e, "first_name")}
             value={userInfo.first_name}
           />
-          <Typography>Last Name</Typography>
           <TextField
             sx={{ width: "400px" }}
             id="last_name"
             label="Last Name"
-            variant="standard"
+            inputProps={{
+              style: { backgroundColor: "white" },
+            }}
             onChange={(e) => updateField(e, "last_name")}
             value={userInfo.last_name}
           />
@@ -133,7 +160,9 @@ const Profile = () => {
               </Select>
             </FormControl>
           </Box>
-          <Button variant="contained">Update</Button>
+          <Button onClick={() => submit()} variant="contained">
+            Update
+          </Button>
         </Box>
       </Box>
     </div>

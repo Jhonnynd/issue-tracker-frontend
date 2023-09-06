@@ -58,12 +58,16 @@ function App() {
     }
   });
 
+  const updateCurrentUser = (updatedUser) => {
+    setCurrentUser(updatedUser);
+  };
+
   console.log("currentUser", currentUser);
 
   return (
     <>
       {isAuthenticated ? (
-        <UserContext.Provider value={{ currentUser }}>
+        <UserContext.Provider value={{ currentUser, updateCurrentUser }}>
           <div className="appContainer">
             <Navbar />
             <div className="appContent">

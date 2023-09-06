@@ -528,7 +528,9 @@ const Ticket = () => {
               <Typography>Ticket Title</Typography>
               <Typography>Ticket Description</Typography>
             </Box>
-            <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+            <Box
+              sx={{ display: "flex", gap: 2, justifyContent: "space-between" }}
+            >
               <Typography>{ticket.title}</Typography>
               <Typography>{ticket.description}</Typography>
             </Box>
