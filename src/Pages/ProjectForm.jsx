@@ -176,20 +176,27 @@ const ProjectForm = () => {
             sx={{ width: "400px" }}
             id="project-title"
             label="Project Title"
-            variant="standard"
+            inputProps={{
+              style: { backgroundColor: "white" },
+            }}
             onChange={(e) => setProjectTitle(e.target.value)}
             value={projectTitle}
           />
           <Typography>Project Description</Typography>
-          <TextField
-            sx={{ width: "400px" }}
-            id="outlined-multiline-static"
-            label="Multiline"
-            multiline
-            rows={4}
-            onChange={(e) => setProjectDescription(e.target.value)}
-            value={projectDescription}
-          />
+          <Box sx={{ p: 0 }}>
+            <TextField
+              sx={{ width: "400px" }}
+              id="outlined-multiline-static"
+              label="Description"
+              inputProps={{
+                style: { backgroundColor: "white" },
+              }}
+              multiline
+              rows={4}
+              onChange={(e) => setProjectDescription(e.target.value)}
+              value={projectDescription}
+            />
+          </Box>
 
           <Box>
             <Box>

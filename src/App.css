@@ -14,7 +14,6 @@
 }
 
 .App-header {
-  background-color: #282c34;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -47,4 +46,8 @@
   flex: 1;
   overflow-y: auto;
   padding: 20px;
+}
+
+.css-12i7wg6-MuiPaper-root-MuiDrawer-paper {
+  background-color: #5956ff !important;
 }

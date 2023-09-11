@@ -677,6 +677,7 @@ const Ticket = () => {
               lg: "50%",
               xs: "100%",
             },
+            gap: 3,
             p: 2,
             display: "flex",
             flexDirection: "column",
@@ -684,63 +685,65 @@ const Ticket = () => {
             overflow: "auto",
           }}
         >
-          <Box>
-            <Typography variant="h4">Comments:</Typography>
-          </Box>
-          <Box sx={{ display: "flex", width: "95%" }}>
-            <TextField
-              value={comment}
-              onChange={(e) => setComment(e.target.value)}
-              fullWidth
-              label="Comment"
-              id="fullWidth"
-            />
-            <Button
-              onClick={() => submitComment()}
-              sx={{ p: 2 }}
-              variant="contained"
-            >
-              Submit
-            </Button>
-          </Box>
-          <Box sx={{ width: "100%" }}>
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                width: "85%",
-                height: "300px",
-                overflow: "auto",
-              }}
-            >
-              {Array.isArray(comments) ? (
-                comments.map((comment) => {
-                  return (
-                    <>
-                      <ListItem
-                        className="ListItem"
-                        sx={{
-                          display: "flex",
-                          width: "50%",
-                          justifyContent: "center",
-                          flexDirection: "column",
-                        }}
-                        alignItems="flex-start"
-                      >
-                        <ListItemText
-                          primary={`${comment.user.first_name} ${comment.user.last_name} (${comment.user.user_role.description}) ${comment.user.email} `}
-                          secondary={comment.description}
-                        />
-                      </ListItem>
-                      <Divider />
-                    </>
-                  );
-                })
-              ) : (
-                <div>No comments available</div>
-              )}
+          <Paper sx={{ width: "100%", p: 2 }}>
+            <Box>
+              <Typography variant="h4">Comments:</Typography>
             </Box>
-          </Box>
+            <Box sx={{ display: "flex", width: "95%" }}>
+              <TextField
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
+                fullWidth
+                label="Comment"
+                id="fullWidth"
+              />
+              <Button
+                onClick={() => submitComment()}
+                sx={{ p: 2 }}
+                variant="contained"
+              >
+                Submit
+              </Button>
+            </Box>
+            <Box sx={{ width: "100%" }}>
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  width: "85%",
+                  height: "300px",
+                  overflow: "auto",
+                }}
+              >
+                {Array.isArray(comments) ? (
+                  comments.map((comment) => {
+                    return (
+                      <>
+                        <ListItem
+                          className="ListItem"
+                          sx={{
+                            display: "flex",
+                            width: "50%",
+                            justifyContent: "center",
+                            flexDirection: "column",
+                          }}
+                          alignItems="flex-start"
+                        >
+                          <ListItemText
+                            primary={`${comment.user.first_name} ${comment.user.last_name} (${comment.user.user_role.description}) ${comment.user.email} `}
+                            secondary={comment.description}
+                          />
+                        </ListItem>
+                        <Divider />
+                      </>
+                    );
+                  })
+                ) : (
+                  <div>No comments available</div>
+                )}
+              </Box>
+            </Box>
+          </Paper>
           <Paper
             id="paper"
             sx={{
@@ -749,7 +752,7 @@ const Ticket = () => {
             }}
           >
             <Box>
-              <Typography sx={{ pb: 4 }} variant="h4">
+              <Typography sx={{ pb: 4 }} variant="h5">
                 Ticket Reviews
               </Typography>
               {ticket?.ticket_reviews?.[0] ? (

@@ -99,11 +99,13 @@ const Navbar = () => {
     { icon: LogoutIcon, label: "Logout", action: handleLogout },
   ];
   return (
-    <Box sx={{ pt: 0 }}>
+    <Box sx={{ pt: 0 }} id="box1">
       <Drawer
+        id="drawer"
         variant="permanent"
         anchor="left"
         sx={{
+          backgroundColor: "black",
           width: "300px",
           pt: 0,
           display: {

@@ -16,6 +16,7 @@ import DefaultImage from "../img/image-placeholder.png";
 import Swal from "sweetalert2";
 import { showAdminRoleAlert } from "../utils/alerts";
 import { UserContext } from "../App";
+import { Rowing } from "@mui/icons-material";
 const Project = () => {
   const { currentUser } = useContext(UserContext);
   const { projectId } = useParams();
@@ -102,19 +103,19 @@ const Project = () => {
   return (
     <div>
       <Box>
-        <Box>
-          <Typography variant="h5">Project Name: {project.title}</Typography>
-          {projectImage ? (
-            <Box sx={{ p: 2, width: "90px", maxHeight: "90px" }}>
-              <img
-                style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                alt="project img"
-                src={projectImage}
-              ></img>
-            </Box>
-          ) : null}
-        </Box>
         <Paper sx={{ p: 3 }}>
+          <Box>
+            <Typography variant="h5">Project Name: {project.title}</Typography>
+            {projectImage ? (
+              <Box sx={{ p: 2, width: "150px", height: "150px" }}>
+                <img
+                  style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                  alt="project img"
+                  src={projectImage}
+                ></img>
+              </Box>
+            ) : null}
+          </Box>
           <Box sx={{ pt: 1, pb: 3 }}>
             <Button
               onClick={() => {
@@ -144,8 +145,27 @@ const Project = () => {
           <Typography sx={{ pt: 2 }}>{project.description}</Typography>
         </Paper>
 
-        <Box sx={{ display: "flex" }}>
-          <Box className="team-members" sx={{ width: "50%" }}>
+        <Box
+          sx={{
+            display: "flex",
+            pt: "30px",
+            gap: 3,
+            flexDirection: {
+              xs: "column",
+              md: "row",
+            },
+          }}
+        >
+          <Paper
+            className="team-members"
+            sx={{
+              width: {
+                xs: "100%",
+                lg: "50%",
+              },
+              p: 3,
+            }}
+          >
             <Typography sx={{ mt: 4, mb: 2 }} variant="h6" component="div">
               Team Members
             </Typography>
@@ -165,13 +185,31 @@ const Project = () => {
                 );
               })}
             </List>
-          </Box>
-          <Box className="tickets" sx={{ width: "50%" }}>
+          </Paper>
+          <Paper
+            className="tickets"
+            sx={{
+              width: {
+                xs: "100%",
+                lg: "50%",
+              },
+              p: 3,
+            }}
+          >
             <List sx={{ overflow: "auto", height: "400px" }}>
               <Typography sx={{ mt: 4, mb: 2 }} variant="h6" component="div">
                 Tickets for this project
               </Typography>
-
+              <Button
+                onClick={() => {
+                  if (showAdminRoleAlert(currentUser.userRoleId)) {
+                    navigate("/createticket");
+                  }
+                }}
+                variant="contained"
+              >
+                Create a new Ticket
+              </Button>
               <List component="div" disablePadding>
                 {ticketsFromProject.map((ticket, j) => (
                   <ListItemButton
@@ -237,19 +275,9 @@ const Project = () => {
                     </Box>
                   </ListItemButton>
                 ))}
-                <Button
-                  onClick={() => {
-                    if (showAdminRoleAlert(currentUser.userRoleId)) {
-                      navigate("/createticket");
-                    }
-                  }}
-                  variant="contained"
-                >
-                  Create a new Ticket
-                </Button>
               </List>
             </List>
-          </Box>
+          </Paper>
         </Box>
       </Box>
     </div>

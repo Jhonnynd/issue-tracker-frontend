@@ -1,4 +1,4 @@
-import { Box, Button, TextField, Typography } from "@mui/material";
+import { Box, Button, Paper, TextField, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
 
 import List from "@mui/material/List";
@@ -210,12 +210,13 @@ const UpdateProject = () => {
             label="Description"
             multiline
             rows={4}
+            inputProps
             onChange={(e) => setProjectDescription(e.target.value)}
             value={projectDescription}
           />
 
           <Box>
-            <Box>
+            <Paper sx={{ p: 2 }}>
               <Typography>Project Members</Typography>
               <List
                 dense
@@ -259,7 +260,7 @@ const UpdateProject = () => {
                   );
                 })}
               </List>
-            </Box>
+            </Paper>
           </Box>
           <Box>
             <label>
