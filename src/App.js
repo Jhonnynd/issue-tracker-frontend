@@ -34,8 +34,8 @@ function App() {
           scope: process.env.REACT_APP_SCOPE,
         },
       });
-      // console.log("Access Token : ", accessToken);
-      // console.log("User: ", user);
+      console.log("Access Token : ", accessToken);
+      console.log("User: ", user);
       if (
         isAuthenticated &&
         accessToken !== null &&
