@@ -34,6 +34,7 @@ function App() {
           scope: process.env.REACT_APP_SCOPE,
         },
       });
+      console.log("this is from circleci");
       console.log("Access Token : ", accessToken);
       console.log("User: ", user);
       if (
